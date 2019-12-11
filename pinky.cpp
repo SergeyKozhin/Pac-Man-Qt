@@ -4,15 +4,12 @@
 #include <game.hpp>
 
 Pinky::Pinky(Game* game) :
-  Ghost(game, Field::LEFT)
+  Ghost(game, Field::LEFT, config::SPRITE_START_X, config::PINKY_START_Y)
 {
-  setRect(0, 0, config::ENTITY_SIZE, config::ENTITY_SIZE);
-  setPos(Field::toPoint({13, 11}) - QPointF(config::ENTITY_SIZE / 2, config::ENTITY_SIZE / 2)
+  setPos(Field::Tile{13, 11}.toPoint() - QPointF(config::ENTITY_SIZE / 2, config::ENTITY_SIZE / 2)
          + QPointF(config::TILE_SIZE / 2, 0));
 
-  setBrush(QBrush(Qt::magenta));
-
-  timer_->start(1000. / config::GHOST_SPEED);
+  setDefault();
 }
 
 Field::Tile Pinky::getTargetTile()
@@ -23,4 +20,9 @@ Field::Tile Pinky::getTargetTile()
 Field::Tile Pinky::getScatterTile()
 {
   return {0, 0};
+}
+
+void Pinky::setDefault()
+{
+  setPixmap(sheet_.copy(config::SPRITE_START_X, config::PINKY_START_Y, config::ENTITY_SIZE, config::ENTITY_SIZE));
 }

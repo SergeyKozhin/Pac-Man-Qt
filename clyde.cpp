@@ -4,15 +4,12 @@
 #include <game.hpp>
 
 Clyde::Clyde(Game* game) :
-  Ghost(game, Field::LEFT)
+  Ghost(game, Field::LEFT, config::SPRITE_START_X, config::CLYDE_START_Y)
 {
-  setRect(0, 0, config::ENTITY_SIZE, config::ENTITY_SIZE);
-  setPos(Field::toPoint({13, 11}) - QPointF(config::ENTITY_SIZE / 2, config::ENTITY_SIZE / 2)
+  setPos(Field::Tile{13, 11}.toPoint() - QPointF(config::ENTITY_SIZE / 2, config::ENTITY_SIZE / 2)
          + QPointF(config::TILE_SIZE / 2, 0));
 
-  setBrush(QBrush(Qt::gray));
-
-  timer_->start(1000. / config::GHOST_SPEED);
+  setDefault();
 }
 
 Field::Tile Clyde::getTargetTile()
@@ -29,4 +26,9 @@ Field::Tile Clyde::getTargetTile()
 Field::Tile Clyde::getScatterTile()
 {
   return {0, config::FIELD_SIZE_Y};
+}
+
+void Clyde::setDefault()
+{
+  setPixmap(sheet_.copy(config::SPRITE_START_X, config::CLYDE_START_Y, config::ENTITY_SIZE, config::ENTITY_SIZE));
 }

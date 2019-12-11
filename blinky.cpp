@@ -3,16 +3,12 @@
 #include <QTimer>
 #include <game.hpp>
 
-Blinky::Blinky(Game* game) :
-  Ghost(game, Field::LEFT)
+Blinky::Blinky(Game* game) : Ghost(game, Field::LEFT, config::SPRITE_START_X, config::BLINKY_START_Y)
 {
-  setRect(0, 0, config::ENTITY_SIZE, config::ENTITY_SIZE);
-  setPos(Field::toPoint({13, 11}) - QPointF(config::ENTITY_SIZE / 2, config::ENTITY_SIZE / 2)
+  setPos(Field::Tile{13, 11}.toPoint() - QPointF(config::ENTITY_SIZE / 2, config::ENTITY_SIZE / 2)
          + QPointF(config::TILE_SIZE / 2, 0));
 
-  setBrush(QBrush(Qt::red));
-
-  timer_->start(1000. / config::GHOST_SPEED);
+  setDefault();
 }
 
 Field::Tile Blinky::getTargetTile()
@@ -23,4 +19,9 @@ Field::Tile Blinky::getTargetTile()
 Field::Tile Blinky::getScatterTile()
 {
   return {config::FIELD_SIZE_X, 0};
+}
+
+void Blinky::setDefault()
+{
+  setPixmap(sheet_.copy(config::SPRITE_START_X, config::BLINKY_START_Y, config::ENTITY_SIZE, config::ENTITY_SIZE));
 }

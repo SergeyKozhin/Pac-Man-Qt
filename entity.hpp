@@ -1,17 +1,18 @@
 #ifndef ENTITY_HPP
 #define ENTITY_HPP
 
-#include <QGraphicsItem>
+#include <QGraphicsPixmapItem>
 #include "field.hpp"
 
 class Game;
 
-class Entity : public QObject, public QGraphicsEllipseItem
+class Entity : public QObject, public QGraphicsPixmapItem
 {
   Q_OBJECT
 public:
-  Entity(Game* game, Field::Direction startDirection);
-  QPointF getCenter();
+  Entity(Game* game, Field::Direction startDirection, qreal startSpeed, int startFrameX, int startFrameY);
+  QPointF getCenter() const;
+  Field::Tile getTile() const;
 
 public slots:
   void start();
@@ -25,6 +26,16 @@ protected:
   Field::Direction currentDirection_;
   Field::Direction nextDirection_;
   QTimer* timer_;
+  qreal currentSpeed_;
+  QPixmap sheet_;
+
+  int currFrameX_;
+  int currFrameY_;
+
+  Field::Tile tile_;
+
+  virtual void nextFrame() = 0;
+  virtual void updateDirection() = 0;
 };
 
 #endif // ENTITY_HPP

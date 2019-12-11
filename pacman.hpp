@@ -22,9 +22,14 @@ private:
     STANDING,
     MOVING
   };
-  state state = STANDING;
+  state state;
 
   void align();
+  void checkFood();
+  void checkGhosts();
+
+  void nextFrame() override;
+  void updateDirection() override;
 };
 
 #endif // PACMAN_HPP

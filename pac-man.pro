@@ -2,7 +2,7 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += c++11
+CONFIG += c++14
 
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
@@ -20,6 +20,7 @@ SOURCES += \
     clyde.cpp \
     entity.cpp \
     field.cpp \
+    food.cpp \
     game.cpp \
     ghost.cpp \
     inky.cpp \
@@ -32,6 +33,7 @@ HEADERS += \
   clyde.hpp \
   entity.hpp \
   field.hpp \
+  food.hpp \
   game.hpp \
   ghost.hpp \
   inky.hpp \

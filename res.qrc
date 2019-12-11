@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/img">
         <file>field.png</file>
+        <file>sprites.png</file>
     </qresource>
 </RCC>

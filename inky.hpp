@@ -12,5 +12,6 @@ public:
 private:
   Field::Tile getTargetTile() override;
   Field::Tile getScatterTile() override;
+  void setDefault() override;
 };
 #endif // INKY_HPP
