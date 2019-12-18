@@ -148,20 +148,23 @@ void Ghost::backToNormal()
 
 void Ghost::nextFrame()
 {
-  currFrameX_ += config::ENTITY_SIZE;
-  if ((currFrameX_ - config::SPRITE_START_X) % (config::ENTITY_SIZE * 2) == 0)
+  if (state_ != DEAD)
   {
-    currFrameX_ -= (config::ENTITY_SIZE * 2);
-  }
-  if (frightTimer_->isActive() && frightTimer_->remainingTime() < 2000)
-  {
-    if (currFrameX_ < config::SPRITE_START_X + config::ENTITY_SIZE * 10)
+    currFrameX_ += config::ENTITY_SIZE;
+    if ((currFrameX_ - config::SPRITE_START_X) % (config::ENTITY_SIZE * 2) == 0)
     {
-      currFrameX_ += config::ENTITY_SIZE * 2;
+      currFrameX_ -= (config::ENTITY_SIZE * 2);
     }
-    else
+    if (frightTimer_->isActive() && frightTimer_->remainingTime() < 2000)
     {
-      currFrameX_ -= config::ENTITY_SIZE * 2;
+      if (currFrameX_ < config::SPRITE_START_X + config::ENTITY_SIZE * 10)
+      {
+        currFrameX_ += config::ENTITY_SIZE * 2;
+      }
+      else
+      {
+        currFrameX_ -= config::ENTITY_SIZE * 2;
+      }
     }
   }
 
@@ -191,21 +194,25 @@ void Ghost::updateDirection()
       currFrameX_ = config::SPRITE_START_X + config::ENTITY_SIZE * 8;
       break;
     }
-    return;
   }
-  switch (nextDirection_)
+  else
   {
-  case Field::UP:
-    currFrameX_ = config::SPRITE_START_X + config::ENTITY_SIZE * 4;
-    break;
-  case Field::LEFT:
-    currFrameX_ = config::SPRITE_START_X + config::ENTITY_SIZE * 2;
-    break;
-  case Field::DOWN:
-    currFrameX_ = config::SPRITE_START_X + config::ENTITY_SIZE * 6;
-    break;
-  case Field::RIGHT:
-    currFrameX_ = config::SPRITE_START_X;
-    break;
+    switch (nextDirection_)
+    {
+    case Field::UP:
+      currFrameX_ = config::SPRITE_START_X + config::ENTITY_SIZE * 4;
+      break;
+    case Field::LEFT:
+      currFrameX_ = config::SPRITE_START_X + config::ENTITY_SIZE * 2;
+      break;
+    case Field::DOWN:
+      currFrameX_ = config::SPRITE_START_X + config::ENTITY_SIZE * 6;
+      break;
+    case Field::RIGHT:
+      currFrameX_ = config::SPRITE_START_X;
+      break;
+    }
   }
+
+  setPixmap(sheet_.copy(currFrameX_, currFrameY_, config::ENTITY_SIZE, config::ENTITY_SIZE));
 }
