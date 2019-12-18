@@ -7,6 +7,7 @@ class Blinky : public Ghost
 {
 public:
   explicit Blinky(Game* game);
+  void resetPos() override;
 
 private:
   Field::Tile getTargetTile() override;

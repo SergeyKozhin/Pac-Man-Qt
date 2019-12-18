@@ -3,6 +3,7 @@
 
 #include "entity.hpp"
 #include <QObject>
+#include <QTimer>
 
 class Ghost : public Entity
 {
@@ -10,6 +11,7 @@ class Ghost : public Entity
 public:
   enum State
   {
+    CAGED,
     CHASE,
     FRIGHTENED,
     DEAD
@@ -28,6 +30,7 @@ protected:
   static const Field::Tile deathTile;
   State state_;
   Field::Tile targetTile_;
+  QTimer* frightTimer_;
 
   void nextFrame() override;
   void updateDirection() override;

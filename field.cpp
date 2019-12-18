@@ -13,10 +13,10 @@ const int Field::field_[config::FIELD_SIZE_Y][config::FIELD_SIZE_X] = {
     {1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1},
     {1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1},
     {1, 1, 1, 1, 1, 1, 0, 1, 1, 2, 2, 4, 4, 4, 4, 4, 4, 2, 2, 1, 1, 0, 1, 1, 1, 1, 1, 1},
-    {1, 1, 1, 1, 1, 1, 0, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 0, 1, 1, 1, 1, 1, 1},
-    {1, 1, 1, 1, 1, 1, 0, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 0, 1, 1, 1, 1, 1, 1},
-    {5, 5, 5, 5, 2, 2, 0, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 0, 5, 5, 5, 5, 5, 5},
-    {1, 1, 1, 1, 1, 1, 0, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 0, 1, 1, 1, 1, 1, 1},
+    {1, 1, 1, 1, 1, 1, 0, 1, 1, 2, 1, 1, 1, 7, 7, 1, 1, 1, 2, 1, 1, 0, 1, 1, 1, 1, 1, 1},
+    {1, 1, 1, 1, 1, 1, 0, 1, 1, 2, 1, 7, 7, 7, 7, 7, 7, 1, 2, 1, 1, 0, 1, 1, 1, 1, 1, 1},
+    {5, 5, 5, 5, 2, 2, 0, 2, 2, 2, 1, 7, 7, 7, 7, 7, 7, 1, 2, 2, 2, 0, 5, 5, 5, 5, 5, 5},
+    {1, 1, 1, 1, 1, 1, 0, 1, 1, 2, 1, 7, 7, 7, 7, 7, 7, 1, 2, 1, 1, 0, 1, 1, 1, 1, 1, 1},
     {1, 1, 1, 1, 1, 1, 0, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 0, 1, 1, 1, 1, 1, 1},
     {1, 1, 1, 1, 1, 1, 0, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 0, 1, 1, 1, 1, 1, 1},
     {1, 1, 1, 1, 1, 1, 0, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 0, 1, 1, 1, 1, 1, 1},
@@ -35,18 +35,24 @@ const int Field::field_[config::FIELD_SIZE_Y][config::FIELD_SIZE_X] = {
 
 bool Field::canGo(const Field::Tile& tile, Field::Direction direction)
 {
+  int type = field_[tile.y][tile.x];
   switch (direction)
   {
   case UP:
-    return (field_[(tile.y - 1 + config::FIELD_SIZE_Y) % config::FIELD_SIZE_Y][tile.x] != 1);
+    type = field_[(tile.y - 1 + config::FIELD_SIZE_Y) % config::FIELD_SIZE_Y][tile.x];
+    break;
   case LEFT:
-    return (field_[tile.y][(tile.x - 1 + config::FIELD_SIZE_X) % config::FIELD_SIZE_X] != 1);
+    type = field_[tile.y][(tile.x - 1 + config::FIELD_SIZE_X) % config::FIELD_SIZE_X];
+    break;
   case DOWN:
-    return (field_[(tile.y + 1) % config::FIELD_SIZE_Y][tile.x] != 1);
+    type = field_[(tile.y + 1) % config::FIELD_SIZE_Y][tile.x];
+    break;
   case RIGHT:
-    return (field_[tile.y][(tile.x + 1) % config::FIELD_SIZE_X] != 1);
+    type = field_[tile.y][(tile.x + 1) % config::FIELD_SIZE_X];
+    break;
   }
 
+  return (type != Tile::Type::WALL && type != Tile::Type::GHOST_ONLY);
   return false;
 }
 

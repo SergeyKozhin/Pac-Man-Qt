@@ -8,9 +8,10 @@
 
 Pacman::Pacman(Game* game) :
   Entity(game, Field::RIGHT, 1000. / config::PACMAN_SPEED, config::SPRITE_START_X, config::PACMAN_START_Y),
-  state(STANDING)
+  state(STANDING),
+  ghostsEaten_(0)
 {
-  setPos(Field::Tile{13, 23}.toPoint() - boundingRect().center() + QPointF(config::TILE_SIZE / 2, 0));
+  resetPos();
   tile_ = getTile();
 
   setFlag(QGraphicsItem::ItemIsFocusable);
@@ -33,6 +34,11 @@ void Pacman::keyPressEvent(QKeyEvent* event)
     nextDirection_ = Field::RIGHT;
     break;
   case Qt::Key_Return:
+    if (game_->getIsOver())
+    {
+      game_->reset();
+      break;
+    }
     game_->start();
     break;
   case Qt::Key_Escape:
@@ -46,11 +52,23 @@ Field::Direction Pacman::getDirection()
   return currentDirection_;
 }
 
+void Pacman::resetPos()
+{
+  setPos(Field::Tile{13, 23}.toPoint() - boundingRect().center() + QPointF(config::TILE_SIZE / 2, 0));
+  currentDirection_ = Field::RIGHT;
+  nextDirection_ = Field::RIGHT;
+  updateDirection();
+  nextFrame();
+}
+
 void Pacman::tick()
 {
   if (tile_ != getTile())
   {
+    timer_->stop();
     nextFrame();
+    checkFood();
+    timer_->start(1000. / config::PACMAN_SPEED);
   }
   tile_ = getTile();
   Field::Tile tile = Field::toTile(getCenter());
@@ -70,7 +88,6 @@ void Pacman::tick()
     align();
   }
 
-  checkFood();
   checkGhosts();
 }
 
@@ -107,7 +124,7 @@ void Pacman::checkFood()
   auto collisions = collidingItems();
   for (QGraphicsItem* item : collisions)
   {
-    if (typeid(*item) == typeid(Food) && item->collidesWithItem(this, Qt::ContainsItemShape))
+    if (typeid(*item) == typeid(Food))
     {
       Food* food = dynamic_cast<Food*>(item);
       switch (food->getType())
@@ -117,6 +134,7 @@ void Pacman::checkFood()
         break;
       case Food::Type::BIG_PELLET:
         game_->increseScore(50);
+        ghostsEaten_ = 0;
         for (auto ghost : game_->getGhosts())
         {
           ghost.second->frighten();
@@ -124,6 +142,7 @@ void Pacman::checkFood()
       }
 
       delete food;
+      game_->decreaseDots();
     }
   }
 }
@@ -137,10 +156,12 @@ void Pacman::checkGhosts()
       if (ghost.second->getState() == Ghost::State::FRIGHTENED)
       {
         ghost.second->kill();
+        game_->increseScore(200 >> ghostsEaten_);
+        ghostsEaten_++;
       }
       else if (ghost.second->getState() == Ghost::State::CHASE)
       {
-        game_->stop();
+        game_->gameOver();
       }
     }
   }
@@ -182,13 +203,3 @@ void Pacman::updateDirection()
     break;
   }
 }
-
-// void Pacman::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
-//{
-//  setBrush(QBrush(Qt::yellow));
-//  painter->drawRoundRect(20, 20, 20, 20, 5, 5);
-////  painter->drawPixmap(pos().x(), pos().y(), sheet_, currFrameX, currFrameY, config::ENTITY_SIZE,
-/// config::ENTITY_SIZE);
-//  Q_UNUSED(option);
-//  Q_UNUSED(widget);
-//}

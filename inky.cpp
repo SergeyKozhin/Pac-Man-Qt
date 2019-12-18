@@ -4,13 +4,22 @@
 #include <game.hpp>
 
 Inky::Inky(Game* game) :
-  Ghost(game, Field::LEFT, config::SPRITE_START_X, config::INKY_START_Y)
+  Ghost(game, Field::RIGHT, config::SPRITE_START_X, config::INKY_START_Y)
 {
-//  setRect(0, 0, config::ENTITY_SIZE, config::ENTITY_SIZE);
-  setPos(Field::Tile{13, 11}.toPoint() - QPointF(config::ENTITY_SIZE / 2, config::ENTITY_SIZE / 2)
+  resetPos();
+}
+
+void Inky::resetPos()
+{
+  setPos(Field::Tile{11, 14}.toPoint() - QPointF(config::ENTITY_SIZE / 2, config::ENTITY_SIZE / 2)
          + QPointF(config::TILE_SIZE / 2, 0));
 
+  currentDirection_ = Field::RIGHT;
+  nextDirection_ = currentDirection_;
+  state_ = CAGED;
   setDefault();
+  updateDirection();
+  nextFrame();
 }
 
 Field::Tile Inky::getTargetTile()
@@ -28,4 +37,6 @@ Field::Tile Inky::getScatterTile()
 void Inky::setDefault()
 {
   setPixmap(sheet_.copy(config::SPRITE_START_X, config::INKY_START_Y, config::ENTITY_SIZE, config::ENTITY_SIZE));
+  currFrameX_ = config::SPRITE_START_X;
+  currFrameY_ = config::INKY_START_Y;
 }

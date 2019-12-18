@@ -8,6 +8,7 @@ class Inky : public Ghost
 {
 public:
   explicit Inky(Game* game);
+  void resetPos() override;
 
 private:
   Field::Tile getTargetTile() override;

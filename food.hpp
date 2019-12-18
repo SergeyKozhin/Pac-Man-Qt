@@ -18,10 +18,12 @@ public:
 
   Food(Game* game, const Field::Tile& tile, Type type);
   Type getType() const;
+  Field::Tile getTile() const;
 
 private:
   Game* game_;
   Type type_;
+  Field::Tile tile_;
 };
 
 #endif // FOOD_HPP

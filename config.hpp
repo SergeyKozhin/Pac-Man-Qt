@@ -3,7 +3,7 @@
 
 namespace config
 {
-  static const int FACTOR = 4;
+  static const int FACTOR = 3;
 
   static const int ORIGINAL_TILE_SIZE = 8;
   static const int TILE_SIZE = FACTOR * ORIGINAL_TILE_SIZE;
@@ -23,7 +23,7 @@ namespace config
   static const int PELLET_SIZE = ORIGINAL_PELLET_SIZE * FACTOR;
   static const int BIG_PELETE_SIZE = PELLET_SIZE * 4;
 
-  static const int ORIGIANL_SPRITE_START_X = 450;
+  static const int ORIGIANL_SPRITE_START_X = 0;
   static const int ORIGIANL_PACMAN_START_Y = 0;
   static const int SPRITE_START_X = ORIGIANL_SPRITE_START_X * FACTOR;
   static const int PACMAN_START_Y = ORIGIANL_PACMAN_START_Y * FACTOR;

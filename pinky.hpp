@@ -7,6 +7,7 @@ class Pinky : public Ghost
 {
 public:
   explicit Pinky(Game* game);
+  void resetPos() override;
 
 private:
   Field::Tile getTargetTile() override;

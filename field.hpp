@@ -26,7 +26,8 @@ public:
       PELLET_BLOCK,
       BLOCK,
       SLOWDOWN,
-      BIG_PELLET
+      BIG_PELLET,
+      GHOST_ONLY
     };
 
     int x, y;

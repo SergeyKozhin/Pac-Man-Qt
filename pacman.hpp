@@ -9,6 +9,7 @@ class Pacman : public Entity
 public:
   explicit Pacman(Game* game);
   Field::Direction getDirection();
+  void resetPos() override;
 
 protected:
   void keyPressEvent(QKeyEvent* event) override;
@@ -23,6 +24,7 @@ private:
     MOVING
   };
   state state;
+  int ghostsEaten_;
 
   void align();
   void checkFood();

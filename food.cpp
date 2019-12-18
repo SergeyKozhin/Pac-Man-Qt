@@ -5,7 +5,8 @@ Food::Food(Game* game, const Field::Tile& tile, Food::Type type) :
   QObject(game),
   QGraphicsEllipseItem(),
   game_(game),
-  type_(type)
+  type_(type),
+  tile_(tile)
 {
   if (type == Type::PELLET)
   {
@@ -15,7 +16,7 @@ Food::Food(Game* game, const Field::Tile& tile, Food::Type type) :
   {
     setRect(0, 0, config::BIG_PELETE_SIZE, config::BIG_PELETE_SIZE);
   }
-  setPos(tile.toPoint() - rect().center());
+  setPos(tile_.toPoint() - rect().center());
 
   setBrush(QBrush(Qt::yellow));
 }
@@ -23,4 +24,9 @@ Food::Food(Game* game, const Field::Tile& tile, Food::Type type) :
 Food::Type Food::getType() const
 {
   return type_;
+}
+
+Field::Tile Food::getTile() const
+{
+  return tile_;
 }

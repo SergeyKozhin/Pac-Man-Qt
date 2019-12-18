@@ -1,14 +1,16 @@
 #include "ghost.hpp"
 #include <limits>
-#include <QTimer>
 
 const Field::Tile Ghost::deathTile = {13, 11};
 
 Ghost::Ghost(Game* game, Field::Direction startDirection, int startFrameX, int startFrameY) :
   Entity(game, startDirection, 1000. / config::GHOST_SPEED, startFrameX, startFrameY),
   state_(CHASE),
-  targetTile_({0, 0})
+  targetTile_({0, 0}),
+  frightTimer_(new QTimer(this))
 {
+  frightTimer_->setSingleShot(true);
+  connect(frightTimer_, SIGNAL(timeout()), this, SLOT(backToNormal()));
 }
 
 Ghost::State Ghost::getState() const
@@ -18,22 +20,23 @@ Ghost::State Ghost::getState() const
 
 void Ghost::frighten()
 {
-  if (state_ == CHASE)
+  if (state_ != DEAD)
   {
-//    setBrush(QBrush(Qt::blue));
     state_ = FRIGHTENED;
     nextDirection_ = Field::opposite(currentDirection_);
+    currFrameX_ = config::SPRITE_START_X + config::ENTITY_SIZE * 8;
+    currFrameY_ = config::BLINKY_START_Y;
 
-    QTimer* timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(backToNormal()));
-    timer->setSingleShot(true);
-    timer->start(5000);
+    frightTimer_->start(5000);
   }
 }
 
 void Ghost::kill()
 {
   state_ = DEAD;
+  currFrameX_ = config::SPRITE_START_X + 8 * config::ENTITY_SIZE;
+  currFrameY_ = config::PINKY_START_Y;
+  frightTimer_->stop();
 }
 
 void Ghost::tick()
@@ -45,9 +48,13 @@ void Ghost::tick()
   tile_ = getTile();
 
   Field::Tile currTile = Field::toTile(getCenter());
-  if (currTile.getType() == Field::Tile::Type::SLOWDOWN || state_ == FRIGHTENED)
+  if (state_ == FRIGHTENED)
   {
-    currentSpeed_ = 1000. / (config::GHOST_SPEED / 2);
+    currentSpeed_ = 1000. / (config::GHOST_SPEED * 0.6);
+  }
+  else if (currTile.getType() == Field::Tile::Type::SLOWDOWN)
+  {
+    currentSpeed_ = 1000. / (config::GHOST_SPEED * 0.5);
   }
   else
   {
@@ -55,19 +62,31 @@ void Ghost::tick()
   }
   timer_->setInterval(currentSpeed_);
 
-  if (state_ == CHASE)
+  switch (state_)
   {
+  case CHASE:
     targetTile_ = getTargetTile();
-  }
-  if (state_ == DEAD)
-  {
+    break;
+  case DEAD:
     if (getTile() == deathTile)
     {
       state_ = CHASE;
       setDefault();
     }
     targetTile_ = deathTile;
-    timer_->setInterval(1000. / (config::GHOST_SPEED * 3));
+    timer_->setInterval(1000. / (config::GHOST_SPEED * 2));
+    break;
+  case CAGED:
+    if (getTile() == deathTile)
+    {
+      state_ = CHASE;
+      setDefault();
+    }
+    targetTile_ = deathTile;
+    timer_->setInterval(1000. / (config::GHOST_SPEED * 0.6));
+    break;
+  default:
+    break;
   }
 
   if (Field::onField(getCenter()) && getCenter() == (Field::toTile(getCenter()).toPoint()))
@@ -95,8 +114,8 @@ void Ghost::tick()
         for (int i = Field::UP; i <= Field::RIGHT; ++i)
         {
           Field::Direction dir = static_cast<Field::Direction>(i);
-          if (Field::canGo(nextTile, dir) && dir != Field::opposite(currentDirection_)
-              && nextTile.nextTile(dir).distSqr(targetTile_) < minDist)
+          if ((Field::canGo(nextTile, dir) || (state_ == CAGED && nextTile.getType() == Field::Tile::Type::GHOST_ONLY))
+              && dir != Field::opposite(currentDirection_) && nextTile.nextTile(dir).distSqr(targetTile_) < minDist)
           {
             if (dir == Field::UP
                 && (currTile.getType() == Field::Tile::Type::BLOCK
@@ -119,9 +138,12 @@ void Ghost::tick()
 
 void Ghost::backToNormal()
 {
-  state_ = CHASE;
-  setDefault();
-  nextDirection_ = Field::opposite(currentDirection_);
+  if (state_ == FRIGHTENED)
+  {
+    state_ = CHASE;
+    setDefault();
+    updateDirection();
+  }
 }
 
 void Ghost::nextFrame()
@@ -131,11 +153,46 @@ void Ghost::nextFrame()
   {
     currFrameX_ -= (config::ENTITY_SIZE * 2);
   }
+  if (frightTimer_->isActive() && frightTimer_->remainingTime() < 2000)
+  {
+    if (currFrameX_ < config::SPRITE_START_X + config::ENTITY_SIZE * 10)
+    {
+      currFrameX_ += config::ENTITY_SIZE * 2;
+    }
+    else
+    {
+      currFrameX_ -= config::ENTITY_SIZE * 2;
+    }
+  }
+
   setPixmap(sheet_.copy(currFrameX_, currFrameY_, config::ENTITY_SIZE, config::ENTITY_SIZE));
 }
 
 void Ghost::updateDirection()
 {
+  if (state_ == FRIGHTENED)
+  {
+    return;
+  }
+  if (state_ == DEAD)
+  {
+    switch (nextDirection_)
+    {
+    case Field::UP:
+      currFrameX_ = config::SPRITE_START_X + config::ENTITY_SIZE * 10;
+      break;
+    case Field::LEFT:
+      currFrameX_ = config::SPRITE_START_X + config::ENTITY_SIZE * 9;
+      break;
+    case Field::DOWN:
+      currFrameX_ = config::SPRITE_START_X + config::ENTITY_SIZE * 11;
+      break;
+    case Field::RIGHT:
+      currFrameX_ = config::SPRITE_START_X + config::ENTITY_SIZE * 8;
+      break;
+    }
+    return;
+  }
   switch (nextDirection_)
   {
   case Field::UP:

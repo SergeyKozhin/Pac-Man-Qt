@@ -7,6 +7,7 @@ class Clyde : public Ghost
 {
 public:
   explicit Clyde(Game* game);
+  void resetPos() override;
 
 private:
   Field::Tile getTargetTile() override;

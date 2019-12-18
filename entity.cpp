@@ -10,7 +10,7 @@ Entity::Entity(Game* game, Field::Direction startDirection, qreal startSpeed, in
   nextDirection_(startDirection),
   timer_(new QTimer(this)),
   currentSpeed_(startSpeed),
-  sheet_(QPixmap(":/img/sprites.png").scaled(config::FIELD_SIZE_X_PX * 3, config::FIELD_SIZE_Y_PX)),
+  sheet_(QPixmap(":/img/sprites.png").scaled(225 * config::FACTOR, 248 * config::FACTOR)),
   currFrameX_(startFrameX),
   currFrameY_(startFrameY),
   tile_(getTile())

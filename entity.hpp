@@ -13,6 +13,7 @@ public:
   Entity(Game* game, Field::Direction startDirection, qreal startSpeed, int startFrameX, int startFrameY);
   QPointF getCenter() const;
   Field::Tile getTile() const;
+  virtual void resetPos() = 0;
 
 public slots:
   void start();
